@@ -13,11 +13,23 @@ const pool = mysql.createPool({
     database: 'EC2024'
 });
 
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: process.env.MYSQLPASSWORD,
+    database: 'EC2024'
+});
+
 app.set('view engine', 'ejs');
 
 app.use(express.static(path.join(__dirname, '/assets')));
 
 const query = promisify(pool.query).bind(pool);
+
+connection.connect((err) => {
+    if (err) throw err;
+    console.log('Connected to MySQL database!');
+  });
 
 app.get('/item', async (req, res) => {
     try {
