@@ -1,13 +1,14 @@
-const mysql = require('mysql2');
+const Pool = require('pg').Pool
 
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'EC2024_08'
+const pool = new Pool({
+    host: '',
+    user: 'postgre',
+    password: process.env.MYSQLPASSWORD,
+    database: 'EC2024',
+    port: 5432
 });
 
-db.connect((err) => {
+pool.connect((err) => {
     if (err) {
         throw err;
     }
@@ -15,4 +16,4 @@ db.connect((err) => {
 });
 
 
-module.exports = db;
+module.exports = pool;

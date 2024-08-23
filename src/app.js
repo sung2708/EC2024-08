@@ -1,46 +1,15 @@
-require('dotenv').config();
-const express = require('express');
-const mysql = require('mysql2')
-const path = require('path');
+require('dotenv').config()
+
+const express = require('express')
+const path = require('path')
 const app = express()
-const port = 3001;
 
-const { promisify } = require('util');
+const port = 3001
 
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: process.env.MYSQLPASSWORD,
-    database: 'EC2024'
-});
-
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: process.env.MYSQLPASSWORD,
-    database: 'EC2024'
-});
-
+//For displaying
 app.set('view engine', 'ejs');
 
 app.use(express.static(path.join(__dirname, '/assets')));
-
-const query = promisify(pool.query).bind(pool);
-
-connection.connect((err) => {
-    if (err) throw err;
-    console.log('Connected to MySQL database!');
-  });
-
-app.get('/item', async (req, res) => {
-    try {
-        const [rows] = await query('SELECT * FROM ITEM');
-        res.json(rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error retrieving users');
-    }
-});
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
