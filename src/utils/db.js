@@ -1,19 +1,14 @@
-const Pool = require('pg').Pool
+const mysql = require('mysql2/promise');
 
-const pool = new Pool({
-    host: '',
-    user: 'postgre',
-    password: process.env.MYSQLPASSWORD,
-    database: 'EC2024',
-    port: 5432
+// Tạo kết nối pool với MySQL
+const pool = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'ecommerce',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
-
-pool.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('Connected to database');
-});
-
 
 module.exports = pool;
