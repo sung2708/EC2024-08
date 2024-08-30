@@ -5,7 +5,7 @@ const productController = require('../controllers/product.controller');
 const cors = require('cors');
 //Cors option
 const corsOption = {
-    origin: "http://localhost:3001"
+    origin: "http://localhost:3000"
 }
 //Router accept cors
 router.use(cors(corsOption));
