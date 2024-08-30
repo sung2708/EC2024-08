@@ -1,8 +1,11 @@
 const pool = require('../utils/db');
 
 // Tạo người dùng
-const create = async (username, email, password, role) => {
-    const [result] = await pool.query('INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)', [username, email, password, role]);
+const create = async (username, email, password, role = 'user') => {
+    const [result] = await pool.query(
+        'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)', 
+        [username, email, password, role]
+    );
     return result;
 };
 
@@ -24,9 +27,17 @@ const update = async (id, username, email, role) => {
     return result;
 };
 
+// Phân quyền người dùng
+const grantRole = async (userId, role) => {
+    const [result] = await pool.query('UPDATE users SET role = ? WHERE id = ?', [role, userId]);
+    return result;
+};
+
+
 module.exports = {
     create,
     findByEmail,
     findById,
     update,
+    grantRole
 };
