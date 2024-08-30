@@ -33,7 +33,21 @@ const updateOrderStatus = async (req, res) => {
     }
 };
 
+// Lây doanh thu theo tháng
+const getMonthlyRevenue = async (req, res) => {
+    try {
+        const { year, month } = req.query;
+        const monthNum = parseInt(month, 10);
+        const revenue = await orderModel.getMonthlyRevenue(year, monthNum);
+        res.json(revenue);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 module.exports = {
     getUndoneOrders,
-    updateOrderStatus
+    updateOrderStatus,
+    getMonthlyRevenue
 };
