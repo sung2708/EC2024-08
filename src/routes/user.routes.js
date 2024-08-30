@@ -3,6 +3,14 @@ const router = express.Router();
 const userController = require('../controllers/user.controller');
 const orderController = require('../controllers/order.controller');
 const userMiddleware = require('../middlewares/user.middleware');
+const cors = require('cors');
+
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200
+}
+
+router.use(cors(corsOptions));
 
 // Route đăng ký
 router.post('/register', userController.register);
