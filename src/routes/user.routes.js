@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
+const orderController = require('../controllers/order.controller');
 const userMiddleware = require('../middlewares/user.middleware');
 
 // Route đăng ký
@@ -20,6 +21,14 @@ router.get('/admin',
     userMiddleware.authenticate, 
     userMiddleware.authorize(['admin']), 
     userController.adminDashboard,
+
+);
+
+// xem doanh thu theo tháng
+router.get('/admin/revenue',
+    userMiddleware.authenticate,
+    userMiddleware.authorize(['admin']),
+    orderController.getMonthlyRevenue
 );
 
 // Thay đổi role của user (chỉ role 'admin' có thể truy cập)

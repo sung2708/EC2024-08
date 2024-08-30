@@ -10,7 +10,21 @@ const updateOrderStatus = async (id, status) => {
     return result;
 };
 
+
+const getMonthlyRevenue = async (year, month) => {
+    const [rows] = await db.query(
+        `SELECT SUM(total_amount) AS revenue 
+         FROM orders 
+         WHERE status = 'completed' 
+           AND YEAR(order_date) = ? 
+           AND MONTH(order_date) = ?`,
+        [year, month]
+    );
+    return rows[0]; 
+};
+
 module.exports = {
     getUndoneOrders,
-    updateOrderStatus
+    updateOrderStatus,
+    getMonthlyRevenue
 };
