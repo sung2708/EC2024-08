@@ -7,9 +7,10 @@
 - Môi trường
 	- Product:  ```npm start```
 	- Dev: ```npm run dev```
-- Mở localhost:3000 trên trình duyệt
+- Mở localhost:8000 trên trình duyệt
 
-### Chạy trên container:
+### Dùng docker
 
-- ```docker-compose up -d``` và mở localhost:3000 trên trình duyệt 
+- ```docker built -t node-app .```
+- ```docker run -d -p 8000:8000 node-app```
 
