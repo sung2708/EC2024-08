@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
 
@@ -21,10 +21,10 @@ const register = async (req, res) => {
         const result = await User.create(username, email, hashedPassword); // Không cần truyền role vì đã có mặc định trong model
 
         // Tạo token
-        const token = jwt.sign({ id: result.insertId, role: 'user' }, 'your_jwt_secret', { expiresIn: '1h' });
+        const token = jwt.sign({ id: result.insertId, role: 'user' }, 'abc@123', { expiresIn: '1h' });
         res.json({ token });
     } catch (error) {
-        console.error(error);
+        console.error('Error registering user:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -50,13 +50,12 @@ const login = async (req, res) => {
         const token = jwt.sign({ id: user.id, role: user.role }, 'your_jwt_secret', { expiresIn: '1h' });
         res.json({ token });
     } catch (error) {
-        console.error(error);
+        console.error('Error logging in:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-
-// Upadate role
+// Cập nhật vai trò người dùng
 const updateUserRole = async (req, res) => {
     try {
         const { userId, role } = req.body;
@@ -75,21 +74,21 @@ const updateUserRole = async (req, res) => {
 
         res.json({ message: 'Role updated successfully' });
     } catch (error) {
-        console.error(error);
+        console.error('Error updating user role:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-
 // Lấy thông tin người dùng
 const profile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id
-        );
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
         res.json(user);
-    }
-    catch (error) {
-        console.error(error);
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
         res.status(500).json({ message: 'Server error' });
     }
 }
@@ -99,20 +98,22 @@ const updateProfile = async (req, res) => {
     try {
         const { username, email } = req.body;
         const result = await User.update(req.user.id, username, email, req.user.role);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
         res.json({ message: 'Profile updated successfully' });
     } catch (error) {
-        console.error(error);
+        console.error('Error updating user profile:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-
-// Admin Dashboard
+// Bảng điều khiển Admin
 const adminDashboard = (req, res) => {
     res.json({ message: 'Welcome to the admin dashboard' });
 };
 
-// Staff Dashboard
+// Bảng điều khiển Staff
 const staffDashboard = (req, res) => {
     res.json({ message: 'Welcome to the staff dashboard' });
 };

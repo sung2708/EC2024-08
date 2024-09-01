@@ -6,10 +6,15 @@ const orderRoutes = require('./routes/order.routes');
 const errorHandler = require('./middlewares/error.middleware');
 
 app.use(express.json());
+
+app.get('/', (req, res) => {
+    res.send('Hello World');
+});
+
 app.use('/api/user', userRouter);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+app.listen(8000, () => {
+    console.log('Server is running on http://localhost:8000');
 });
