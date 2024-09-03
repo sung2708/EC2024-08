@@ -7,8 +7,8 @@ const cors = require('cors');
 
 const corsOptions = {
     origin: [
-        'https://ec-2024-08-fe.vercel.app/',
-        'http://localhost:3000/'
+        'https://ec-2024-08-fe.vercel.app',
+        'http://localhost:3000'
     ],
     optionsSuccessStatus: 200
 }
