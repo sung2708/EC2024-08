@@ -11,8 +11,9 @@ const authenticate = (req, res, next) => {
         if (err) {
             return res.status(401).json({ message: 'Invalid token' });
         }
-        req.user = decoded; // Lưu thông tin user từ token vào request
-        console.log('Authenticated user:', req.user); // Kiểm tra thông tin người dùng
+        // Giả sử thông tin JWT có trường 'id'
+        req.user = { userId: decoded.id, role: decoded.role };
+        console.log('Authenticated user:', req.user); // Ghi log để kiểm tra thông tin người dùng
         next();
     });
 };

@@ -49,11 +49,18 @@ const getMonthlyRevenue = async (req, res) => {
 // Thêm mới hóa đơn và các sản phẩm liên quan
 const addOrder = async (req, res) => {
     const { items } = req.body;
-    const userId = req.user.userId; // Lấy userId từ JWT token đã được xác thực
+    const userId = req.user?.userId; // Lấy userId từ JWT token đã được xác thực
+
+    console.log('Authenticated userId:', userId); // Ghi log để kiểm tra giá trị userId
+
+    if (!userId) {
+        return res.status(401).json({ message: 'User not authenticated' });
+    }
+
     let conn;
     try {
         // Bắt đầu transaction
-        const conn = await db.getConnection();
+        conn = await db.getConnection();
         await conn.beginTransaction();
 
         // Tính tổng số tiền
@@ -89,11 +96,14 @@ const addOrder = async (req, res) => {
 
         res.status(201).json({ message: 'Order created successfully', orderId });
     } catch (error) {
-        await conn.rollback();
-        conn.release();
+        if (conn) {
+            await conn.rollback();
+            conn.release();
+        }
         res.status(500).json({ message: 'Failed to create order', error: error.message });
     }
 };
+
 
 module.exports = {
     getUndoneOrders,
