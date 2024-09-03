@@ -50,10 +50,10 @@ const getMonthlyRevenue = async (req, res) => {
 const addOrder = async (req, res) => {
     const { items } = req.body;
     const userId = req.user.userId; // Lấy userId từ JWT token đã được xác thực
-
+    let conn;
     try {
         // Bắt đầu transaction
-        const conn = await pool.getConnection();
+        const conn = await db.getConnection();
         await conn.beginTransaction();
 
         // Tính tổng số tiền
