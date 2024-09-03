@@ -5,7 +5,7 @@ const productController = require('../controllers/product.controller');
 const cors = require('cors');
 
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: 'https://ec-2024-08-fe.vercel.app/',
     optionsSuccessStatus: 200
 }
 

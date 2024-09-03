@@ -6,7 +6,7 @@ const userMiddleware = require('../middlewares/user.middleware');
 const cors = require('cors');
 
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: 'https://ec-2024-08-fe.vercel.app/',
     optionsSuccessStatus: 200
 }
 

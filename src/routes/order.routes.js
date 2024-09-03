@@ -5,7 +5,7 @@ const userMiddleware = require('../middlewares/user.middleware');
 const cors = require('cors');
 
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: 'https://ec-2024-08-fe.vercel.app/',
     optionsSuccessStatus: 200
 }
 
@@ -17,11 +17,8 @@ router.post('/undone', orderController.getUndoneOrders);
 // Route để cập nhật trạng thái đơn hàng
 router.put('/update-status/:id', orderController.updateOrderStatus);
 
-// Route để lấy doanh thu theo tháng
-router.get('/admin/revenue',
-    userMiddleware.authenticate, 
-    userMiddleware.authorize(['admin']), 
-    orderController.getMonthlyRevenue
-);
+// Route để thêm mới hóa đơn
+router.post('/add-orders', userMiddleware.authenticate, orderController.addOrder);
+
 
 module.exports = router;
