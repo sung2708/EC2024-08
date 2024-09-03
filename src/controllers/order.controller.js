@@ -48,36 +48,50 @@ const getMonthlyRevenue = async (req, res) => {
 
 // Thêm mới hóa đơn và các sản phẩm liên quan
 const addOrder = async (req, res) => {
+    const { items } = req.body;
+    const userId = req.user.userId; // Lấy userId từ JWT token đã được xác thực
+
     try {
-        const { userId, items } = req.body;
+        // Bắt đầu transaction
+        const conn = await pool.getConnection();
+        await conn.beginTransaction();
 
-        // Tạo một đơn hàng mới với tổng tiền ban đầu là 0
-        const orderId = await orderModel.createOrder(userId, 'Pending', 0);
+        // Tính tổng số tiền
+        const totalAmount = items.reduce((total, item) => total + item.price * item.quantity, 0);
 
-        // Thêm từng sản phẩm vào order_items
-        for (const item of items) {
-            await orderModel.createOrderItem(orderId, item.productId, item.quantity, item.price);
-        }
-
-        // Tính tổng tiền cho đơn hàng
-        const totalAmount = await orderModel.calculateTotalAmount(orderId);
-
-        // Cập nhật tổng tiền vào đơn hàng
-        await pool.query(
-            `UPDATE orders SET total_amount = ? WHERE id = ?`,
-            [totalAmount, orderId]
+        // Tạo đơn hàng trong bảng `orders`
+        const [orderResult] = await conn.query(
+            'INSERT INTO orders (user_id, status, total_amount) VALUES (?, ?, ?)',
+            [userId, 'pending', totalAmount]
         );
 
-        res.status(201).json({
-            message: 'Order created successfully',
-            orderId: orderId,
-        });
+        const orderId = orderResult.insertId;
+
+        // Thêm các sản phẩm vào bảng `order_items`
+        for (const item of items) {
+            await conn.query(
+                'INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)',
+                [orderId, item.productId, item.quantity, item.price]
+            );
+        }
+
+        // Cập nhật số lượng sản phẩm trong bảng `inventory`
+        for (const item of items) {
+            await conn.query(
+                'UPDATE inventory SET quantity = quantity - ? WHERE product_id = ?',
+                [item.quantity, item.productId]
+            );
+        }
+
+        // Hoàn tất transaction
+        await conn.commit();
+        conn.release();
+
+        res.status(201).json({ message: 'Order created successfully', orderId });
     } catch (error) {
-        console.error('Error adding order:', error);
-        res.status(500).json({
-            message: 'Failed to add order',
-            error: error.message,
-        });
+        await conn.rollback();
+        conn.release();
+        res.status(500).json({ message: 'Failed to create order', error: error.message });
     }
 };
 
