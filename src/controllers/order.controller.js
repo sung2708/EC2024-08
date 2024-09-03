@@ -7,14 +7,33 @@ const getUndoneOrders = async (req, res) => {
         const { staffId } = req.body;
 
         const [rows] = await db.query(`
-            SELECT o.id, o.order_date, o.status, o.total_amount
+            SELECT o.id, o.order_date, o.status, o.total_amount, p.product_id, p.quantity, p.price, pr.name
             FROM orders o
-            JOIN production p ON o.id = p.order_id
-            WHERE p.assigned_to = ? AND o.status = 'undone'
-            GROUP BY o.id
+            JOIN order_items p ON o.id = p.order_id
+            JOIN products pr ON pr.id = p.product_id
+            WHERE o.status = 'pending'
         `, [staffId]);
+        const result = rows.reduce((acc, it) => {
+            if(acc[it.id])
+            {
+                acc[it.id].items.push(it);
+            }
+            else
+            {
+                const shipDate = new Date(it.order_date);
+                shipDate.setDate(shipDate.getDate() + 3);
+                acc[it.id] = {
+                    items: [it],
+                    id: it.id,
+                    date: new Date(it.order_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+                    amount: it.total_amount.split('.')[0],
+                    shipDate: shipDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                };
+            }
+            return acc;
+        }, {}); //reduce items to array of order contain child order items
 
-        res.json(rows);
+        res.json(result);
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Internal Server Error' });
