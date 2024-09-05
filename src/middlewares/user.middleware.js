@@ -19,14 +19,15 @@ const authenticate = (req, res, next) => {
 };
 
 // Middleware kiểm tra quyền truy cập của người dùng
-const authorize = (roles) => {
-    return (req, res, next) => {
+const authorize = (role) => {
+    return ((req, res, next) => {
         console.log('User role:', req.user.role); // Kiểm tra vai trò của người dùng
-        if (!roles.includes(req.user.role)) {
+        console.log(role);
+        if (role[0] !== req.user.role) {
             return res.status(403).json({ message: 'Access forbidden: insufficient permissions' });
         }
         next();
-    };
+    });
 };
 
 module.exports = {

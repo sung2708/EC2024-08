@@ -37,7 +37,7 @@ router.get('/admin',
 
 // xem doanh thu theo tháng
 router.get('/admin/revenue',
-    userMiddleware.authenticate,
+    [userMiddleware.authenticate],
     userMiddleware.authorize(['admin']),
     orderController.getMonthlyRevenue
 );

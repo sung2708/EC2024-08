@@ -3,7 +3,6 @@ const app = express();
 const userRouter = require('./routes/user.routes');
 const productRoutes = require('./routes/product.routes');
 const orderRoutes = require('./routes/order.routes');
-const errorHandler = require('./middlewares/error.middleware');
 
 app.use(express.json());
 
